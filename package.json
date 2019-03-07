@@ -6,6 +6,7 @@
 	"dependencies": {
 		"@petrpatek/eslint-config-apify": "^1.0.0",
 		"apify": "^0.11.0",
+		"apify-client": "^0.5.3",
 		"eslint": "^5.15.1",
 		"moment": "^2.24.0"
 	},
