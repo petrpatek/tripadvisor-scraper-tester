@@ -14,10 +14,10 @@ const RESTAURANT = {
     isLongClosed: false,
     address: 'Nam. Dr. E. Benese, Liberec 46059 Czech Republic',
 };
-const dataForHonkong = {
+const PRAGUE = require('./prague');
 
-};
 module.exports = {
     RESTAURANT,
     HOTEL,
+    PRAGUE,
 };

@@ -2,7 +2,7 @@ const Apify = require('apify');
 const ApifyClient = require('apify-client');
 const moment = require('moment');
 const { checkObject, isFinished } = require('./tools');
-const { RESTAURANT, HOTEL } = require('./data');
+const { RESTAURANT, HOTEL, PRAGUE } = require('./data');
 
 const { utils: { log } } = Apify;
 Apify.main(async () => {
@@ -32,6 +32,7 @@ Apify.main(async () => {
     } catch (e) {
         log.error(`Could not get data from actor for single hotel: ${HOTEL_ID}`, e);
         report.gettingHotel = { error: e };
+        report.hasError = true;
     }
 
     try {
@@ -48,6 +49,7 @@ Apify.main(async () => {
     } catch (e) {
         log.error(`Could not get data from actor for single restaurant: ${RESTAURANT_ID}`, e);
         report.gettingRestaurant = { error: e };
+        report.hasError = true;
     }
 
     // call actor async for dataset
@@ -67,9 +69,10 @@ Apify.main(async () => {
         );
     } catch (e) {
         log.error('Could not call for actor async start', e);
+        report.hasError = true;
     }
-   await isFinished(apifyClient, output.id, output.actId);
-    //const run = await apifyClient.acts.getRun({ runId: output.id, actId: output.actId });
+    const { defaultDatasetId } = await isFinished(apifyClient, output.id, output.actId);
+    // const run = await apifyClient.acts.getRun({ runId: output.id, actId: output.actId });
 
     console.log(output, 'OUTPUT');
     // get latest data
@@ -78,5 +81,18 @@ Apify.main(async () => {
     // compare
     // output
     await Apify.setValue('REPORT', JSON.stringify(report), { contentType: 'application/json' });
+    if (report.hasError) {
+        await Apify.call(
+            'apify/send-mail',
+            {
+                ...input.email,
+                subject: 'TripAdviser scraper error',
+                html: `Hello,<br/>
+                               Test actor discovered that the Tripadvisor <a href="https://my.apify.com/actors/C3EHyBNnFuHsT2Yn5">Actor has some error.</a>
+                               <br/>`,
+            },
+            { waitSecs: 0 },
+        );
+    }
     console.log('Done.');
 });
