@@ -88,12 +88,13 @@ Apify.main(async () => {
         apifyClient.setOptions({ datasetId: lastDataSetId });
         const { items: refItems } = await apifyClient.datasets.getItems();
         const evaluated = refItems.map(validateItem);
-        const wrongItems = evaluated.filter(item => !item.isItemCorrect).length;
+        const wrongItems = evaluated.filter(item => !item.isItemCorrect);
         const stdDeviation = items.length / 10;
         report.hasError = wrongItems > stdDeviation || Math.abs(items.length - refItems.length) > stdDeviation;
         report.batch = {
             evaluated,
             wrongItems,
+            wrongItemsCount: wrongItems.length,
         };
     }
     await store.setValue('LAST-DATASETID', defaultDatasetId);
