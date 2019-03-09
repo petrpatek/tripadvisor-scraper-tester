@@ -40,8 +40,6 @@ function validateItem(item) {
             && checkProperty('reviews', item)
             && checkProperty('type', item)
             && checkProperty('id', item)
-            && checkProperty('rankingPosition', item)
-            && checkProperty('priceLevel', item)
             && checkProperty('category', item)
             && checkProperty('rating', item);
     return {
