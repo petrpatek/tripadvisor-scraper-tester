@@ -103,7 +103,7 @@ Apify.main(async () => {
     await Apify.call(
         'apify/send-mail',
         {
-            mailObj,
+            ...mailObj,
             subject: `TripAdvisor scraper ${report.hasError ? 'Error' : 'Report'} `,
             html: `Hello,
                        <br/>
