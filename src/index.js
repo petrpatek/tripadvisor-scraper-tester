@@ -119,5 +119,8 @@ Apify.main(async () => {
         },
         { waitSecs: 0 },
     );
+    if (report.hasError) {
+        throw new Error('Ups Something went wrong check the report');
+    }
     console.log('Done.');
 });
