@@ -39,9 +39,7 @@ function validateItem(item) {
             && checkProperty('address', item)
             && checkProperty('reviews', item)
             && checkProperty('type', item)
-            && checkProperty('id', item)
-            && checkProperty('category', item)
-            && checkProperty('rating', item);
+            && checkProperty('id', item);
     return {
         ...item,
         isItemCorrect,
