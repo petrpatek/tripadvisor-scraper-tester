@@ -73,7 +73,7 @@ Apify.main(async () => {
         log.error('Could not call for actor async start', e);
         report.hasError = true;
     }
-    const { defaultDatasetId, defaultKeyValueStoreId } = await isFinished(apifyClient, output.id, output.actId);
+    const { defaultDatasetId, defaultKeyValueStoreId} = await isFinished(apifyClient, output.id, output.actId);
     // const run = await apifyClient.acts.getRun({ runId: output.id, actId: output.actId });
 
     console.log(output, 'OUTPUT');
@@ -108,13 +108,13 @@ Apify.main(async () => {
             html: `Hello,
                        <br/>
                                Test actor ${report.hasError ? '' : 'does not'} discovered that the TripAdvisor
-                               <a href="https://my.apify.com/actors/C3EHyBNnFuHsT2Yn5">Scraper</a> has some error.
+                               <a href="https://my.apify.com/actors/C3EHyBNnFuHsT2Yn5/runs/${output.id}">Scraper</a> has some error.
                               <br/>
                                You can check the report
-                               <a href="https://api.apify.com/v2/key-value-stores/${defaultKeyValueStoreId}/REPORT">
+                               <a href="https://api.apify.com/v2/key-value-stores/${defaultKeyValueStoreId}/records/REPORT">
                               here.
-                              Thanks!
-                               </a> 
+                               </a>
+                                Thanks! 
                                <br/>`,
         },
         { waitSecs: 0 },
