@@ -1,8 +1,8 @@
 const Apify = require('apify');
 const ApifyClient = require('apify-client');
 const moment = require('moment');
-const { checkObject, isFinished } = require('./tools');
-const { RESTAURANT, HOTEL, PRAGUE } = require('./data');
+const { checkObject, isFinished, validateItem } = require('./tools');
+const { RESTAURANT, HOTEL } = require('./data');
 
 const { utils: { log } } = Apify;
 Apify.main(async () => {
@@ -14,6 +14,8 @@ Apify.main(async () => {
         userId,
         token,
     });
+    const store = await Apify.openKeyValueStore('TRIP-ADVISOR-CHECKER');
+    const input = await Apify.getValue('INPUT');
     const report = {};
     log.info('STARTING TEST');
     // call actor sync for one run to get info about hotel
@@ -71,7 +73,7 @@ Apify.main(async () => {
         log.error('Could not call for actor async start', e);
         report.hasError = true;
     }
-    const { defaultDatasetId } = await isFinished(apifyClient, output.id, output.actId);
+    const { defaultDatasetId, defaultKeyValueStoreId } = await isFinished(apifyClient, output.id, output.actId);
     // const run = await apifyClient.acts.getRun({ runId: output.id, actId: output.actId });
 
     console.log(output, 'OUTPUT');
@@ -79,20 +81,43 @@ Apify.main(async () => {
 
     // get scraped data
     // compare
+    apifyClient.setOptions({ datasetId: defaultDatasetId });
+    const { items } = await apifyClient.datasets.getItems();
+    const lastDataSetId = await store.getValue('LAST-DATASETID');
+    if (lastDataSetId) {
+        apifyClient.setOptions({ datasetId: lastDataSetId });
+        const { items: refItems } = await apifyClient.datasets.getItems();
+        const evaluated = refItems.map(validateItem);
+        const wrongItems = evaluated.map(item => !item.isItemCorrect).length;
+        const stdDeviation = items.length / 10;
+        report.hasError = wrongItems > stdDeviation || Math.abs(items.length - refItems.length) > stdDeviation;
+        report.batch = {
+            evaluated,
+            wrongItems,
+        };
+    }
+    await store.setValue('LAST-DATASETID', defaultDatasetId);
     // output
     await Apify.setValue('REPORT', JSON.stringify(report), { contentType: 'application/json' });
-    if (report.hasError) {
-        await Apify.call(
-            'apify/send-mail',
-            {
-                ...input.email,
-                subject: 'TripAdviser scraper error',
-                html: `Hello,<br/>
-                               Test actor discovered that the Tripadvisor <a href="https://my.apify.com/actors/C3EHyBNnFuHsT2Yn5">Actor has some error.</a>
+    const mailObj = report.hasError ? { ...input.emailError } : { ...input.emailStandard };
+    await Apify.call(
+        'apify/send-mail',
+        {
+            mailObj,
+            subject: `TripAdvisor scraper ${report.hasError ? 'Error' : 'Report'} `,
+            html: `Hello,
+                       <br/>
+                               Test actor ${report.hasError ? '' : 'does not'} discovered that the TripAdvisor
+                               <a href="https://my.apify.com/actors/C3EHyBNnFuHsT2Yn5">Scraper</a> has some error.
+                              <br/>
+                               You can check the report
+                               <a href="https://api.apify.com/v2/key-value-stores/${defaultKeyValueStoreId}/REPORT">
+                              here.
+                              Thanks!
+                               </a> 
                                <br/>`,
-            },
-            { waitSecs: 0 },
-        );
-    }
+        },
+        { waitSecs: 0 },
+    );
     console.log('Done.');
 });

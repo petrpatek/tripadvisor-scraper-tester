@@ -7,7 +7,7 @@ function checkObject(newObject, referential) {
     Object.entries(referential).forEach(([key, value]) => {
         checkParams(newObject[key], value);
         if (newObject.reviews.length <= 0) {
-            throw new Error('Object should contain atleast some reviews');
+            throw new Error('Object should contain at least some reviews');
         }
     });
 }
@@ -30,7 +30,27 @@ function isFinished(client, id, actId) {
         }, 60 * 1000);
     });
 }
+function checkProperty(property, item) {
+    return item.hasOwnProperty(property);
+}
+
+function validateItem(item) {
+    const isItemCorrect = checkProperty('name', item)
+            && checkProperty('address', item)
+            && checkProperty('reviews', item)
+            && checkProperty('type', item)
+            && checkProperty('id', item)
+            && checkProperty('rankingPosition', item)
+            && checkProperty('priceLevel', item)
+            && checkProperty('category', item)
+            && checkProperty('rating', item);
+    return {
+        ...item,
+        isItemCorrect,
+    };
+}
 module.exports = {
     checkObject,
     isFinished,
+    validateItem,
 };
