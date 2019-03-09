@@ -61,7 +61,7 @@ Apify.main(async () => {
         output = await Apify.call(
             'petrpatek/tripadvisor-scraper',
             {
-                locationFullName: 'Prague',
+                locationFullName: 'Liberec',
                 lastReviewDate: moment().subtract(5, 'months').format('YYYY-MM-DD'),
                 includeRestaurants: true,
                 includeHotels: true,
