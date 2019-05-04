@@ -4,6 +4,13 @@ const moment = require('moment');
 const { checkObject, isFinished, validateItem } = require('./tools');
 const { RESTAURANT, HOTEL } = require('./data');
 
+const PROXY_SETTINGS = {
+    useApifyProxy: true,
+    apifyProxyGroups: [
+        'SHADER',
+        'BUYPROXIES94952',
+    ],
+};
 const { utils: { log } } = Apify;
 Apify.main(async () => {
     const HOTEL_ID = HOTEL.id;
@@ -27,6 +34,7 @@ Apify.main(async () => {
                 hotelId: HOTEL_ID,
                 lastReviewDate: LAST_REVIEW,
                 includeReviews: true,
+                proxyConfiguration: PROXY_SETTINGS,
             },
         );
         console.log(output.body.reviews);
@@ -45,6 +53,7 @@ Apify.main(async () => {
                 restaurantId: RESTAURANT_ID,
                 lastReviewDate: LAST_REVIEW,
                 includeReviews: true,
+                proxyConfiguration: PROXY_SETTINGS,
             },
         );
         checkObject(output.body, RESTAURANT);
@@ -66,6 +75,7 @@ Apify.main(async () => {
                 includeRestaurants: true,
                 includeHotels: true,
                 includeReviews: false,
+                proxyConfiguration: PROXY_SETTINGS,
             },
             { waitSecs: 0 },
         );
