@@ -38,7 +38,7 @@ function validateItem(item) {
     const isItemCorrect = checkProperty('name', item)
             && checkProperty('address', item)
             && checkProperty('reviews', item)
-            && checkProperty('type', item)
+       //     && checkProperty('type', item)
             && checkProperty('id', item);
     return {
         ...item,
