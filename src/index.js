@@ -92,7 +92,9 @@ Apify.main(async () => {
     // get scraped data
     // compare
     apifyClient.setOptions({ datasetId: defaultDatasetId });
-    const { items } = await apifyClient.datasets.getItems();
+    const paginationList= await apifyClient.datasets.getItems();
+    const {items} = paginationList;
+    console.log(defaultDatasetId, paginationList);
     const lastDataSetId = await store.getValue('LAST-DATASETID');
     if (lastDataSetId) {
         apifyClient.setOptions({ datasetId: lastDataSetId });
