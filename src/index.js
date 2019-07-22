@@ -110,11 +110,10 @@ Apify.main(async () => {
     await store.setValue('LAST-DATASETID', defaultDatasetId);
     // output
     await Apify.setValue('REPORT', JSON.stringify(report), { contentType: 'application/json' });
-    const mailObj = report.hasError ? { ...input.emailError } : { ...input.emailStandard };
     await Apify.call(
         'apify/send-mail',
         {
-            ...mailObj,
+            ...input.emailStandard,
             subject: `TripAdvisor scraper ${report.hasError ? 'Error' : 'Report'} `,
             html: `Hello,
                        <br/>
