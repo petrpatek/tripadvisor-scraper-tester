@@ -8,7 +8,7 @@
 		"apify": "^0.11.0",
 		"apify-client": "^0.5.3",
 		"eslint": "^5.15.1",
-		"moment": "^2.24.0"
+		"moment": "^2.29.4"
 	},
 	"devDependencies": {},
 	"scripts": {
